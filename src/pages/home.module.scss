@@ -1,1 +1,71 @@
-// TODO
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 2rem;
+
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+
+
+  
+
+  .loadMore {
+    display: block;
+    margin: 0 auto;
+    width: 60%;
+    color: var(--pink-900);
+    font-weight: bold;
+    
+  }
+
+  .loadMore:hover {
+    text-decoration: underline;
+  }
+}
+
+.content {
+  display: block;
+  width: 60%;
+  margin: 0 auto;
+
+  
+  h1 {
+    font-weight: bold;
+    font-size: 28px;
+    margin-top: 4rem;
+
+    letter-spacing: -0.5px;  
+    transition: color 0.2s;   
+  }
+
+  h1:first-child {
+    margin-top: 0;
+  }
+
+  
+  p {
+    font-weight: normal;
+    font-size: 18px;
+
+    margin-bottom: 1rem;    
+  }
+
+  div {
+    display: flex;
+    span {
+      margin-left: 3rem;
+    }
+
+    margin-bottom: 3rem;
+  }
+
+  
+}
+.content:hover {
+  h1 { 
+    color: var(--pink-200);
+  }
+}
+
+
