@@ -11,10 +11,10 @@ import { FiCalendar, FiUser } from 'react-icons/fi'
 
 import { getPrismicClient } from '../services/prismic';
 
-import commonStyles from '../styles/common.module.scss';
+
 import styles from './home.module.scss';
 import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
+
 
 interface Post {
   uid?: string;
@@ -38,25 +38,57 @@ interface HomeProps {
 
 
 export default function Home({ postsPagination }: HomeProps) {
-  const [posts, setPosts] = useState<Post[]>(postsPagination.results);
+  const [posts, setPosts] = useState<PostPagination>(postsPagination as PostPagination);
 
-  console.log(posts)
 
-  let newData;
-  useEffect(() => {
-    fetch(postsPagination.next_page)
-      .then((response) => response.json())
-      .then((data) => newData = data)
-  }, []);
-
-  async function handleLoadMorePost() {
-    const newObject = {
-      uid: newData.results[0].uid,
-      first_publication_date: format(new Date(newData.results[0].last_publication_date),
+  /* const object = postsPagination.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: format(new Date(post.first_publication_date),
         'dd MMM yyyy',
         {
           locale: ptBR,
         }),
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author,
+      }
+    }
+  });
+
+  const firstPost = {
+    next_page: postsPagination.next_page,
+    results: object
+  }
+
+  setPosts(firstPost) */
+
+  /*  const newPost = {
+     results: [...postsPagination.results, object],
+     next_page: postsPagination.next_page,
+   };
+ 
+   setPosts(newPost) */
+
+
+
+
+
+
+
+  async function handleLoadMorePost() {
+
+    let newData;
+
+    await fetch(postsPagination.next_page)
+      .then((response) => response.json())
+      .then((data) => newData = data)
+
+
+    const newObject: Post = {
+      uid: newData.results[0].uid,
+      first_publication_date: newData.results[0].first_publication_date,
       data: {
         title: newData.results[0].data.title,
         subtitle: newData.results[0].data.subtitle,
@@ -64,14 +96,31 @@ export default function Home({ postsPagination }: HomeProps) {
       }
     }
 
-    const aux = postsPagination.results;
-    const newPost = [...aux]
-    newPost.push(newObject);
 
-    console.log(postsPagination.results)
+
+    /* 
+        const aux = postsPagination.results;
+        const newPost = [...aux]
+        newPost.push(newObject);
+    
+    
+        const isMorePostOn = true;
+        console.log(isMorePostOn)
+        setPosts(newPost);
+    
+        console.log(postsPagination); */
+
+    const newPost = {
+      results: [...postsPagination.results, newObject],
+      next_page: newData.next_page,
+    };
+
+    setPosts(newPost)
     console.log(newPost)
 
   }
+
+
 
   return (
     <>
@@ -81,21 +130,29 @@ export default function Home({ postsPagination }: HomeProps) {
 
       <main className={styles.container}>
 
-        <Header />
-        {posts.map(post => (
-          <Link href={`/post/${post.uid}`}>
-            <a key={post.uid} href="#" className={styles.content}>
+
+        {posts.results.map(post => (
+          <Link key={post.uid} href={`/post/${post.uid}`}>
+            <a href="#" className={styles.content}>
               <h1>{post.data.title}</h1>
               <p>{post.data.subtitle}</p>
               <div>
-                <time><FiCalendar /> {post.first_publication_date}</time>
+                <time><FiCalendar /> {format(new Date(post.first_publication_date),
+                  'dd MMM yyyy',
+                  {
+                    locale: ptBR,
+                  })}</time>
                 <span><FiUser /> {post.data.author}</span>
               </div>
             </a>
           </Link>
         ))}
 
-        <a className={styles.loadMore} onClick={handleLoadMorePost} >Carregar mais posts</a>
+        <a
+          className={`${styles.loadMore} ${(posts.next_page === null) ? styles.morePostOn : ''}`} //
+          onClick={handleLoadMorePost} >
+          Carregar mais posts
+        </a>
       </main>
     </>
 
@@ -112,17 +169,11 @@ export const getStaticProps: GetStaticProps = async () => {
     pageSize: 1,
   })
 
-  console.log(JSON.stringify(postsResponse, null, 2))
-
   const next_page = postsResponse.next_page;
   const results = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(new Date(post.last_publication_date),
-        'dd MMM yyyy',
-        {
-          locale: ptBR,
-        }),
+      first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title,
         subtitle: post.data.subtitle,

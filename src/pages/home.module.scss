@@ -22,7 +22,17 @@
   .loadMore:hover {
     text-decoration: underline;
   }
+
+  .morePostOn {
+    display: none;
+    cursor: disabled;
+    
+  }
+
+  
+
 }
+
 
 .content {
   display: block;
