@@ -13,7 +13,7 @@ import { getPrismicClient } from '../services/prismic';
 
 
 import styles from './home.module.scss';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 
 interface Post {
@@ -35,47 +35,8 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-
-
 export default function Home({ postsPagination }: HomeProps) {
   const [posts, setPosts] = useState<PostPagination>(postsPagination as PostPagination);
-
-
-  /* const object = postsPagination.results.map(post => {
-    return {
-      uid: post.uid,
-      first_publication_date: format(new Date(post.first_publication_date),
-        'dd MMM yyyy',
-        {
-          locale: ptBR,
-        }),
-      data: {
-        title: post.data.title,
-        subtitle: post.data.subtitle,
-        author: post.data.author,
-      }
-    }
-  });
-
-  const firstPost = {
-    next_page: postsPagination.next_page,
-    results: object
-  }
-
-  setPosts(firstPost) */
-
-  /*  const newPost = {
-     results: [...postsPagination.results, object],
-     next_page: postsPagination.next_page,
-   };
- 
-   setPosts(newPost) */
-
-
-
-
-
-
 
   async function handleLoadMorePost() {
 
@@ -96,20 +57,6 @@ export default function Home({ postsPagination }: HomeProps) {
       }
     }
 
-
-
-    /* 
-        const aux = postsPagination.results;
-        const newPost = [...aux]
-        newPost.push(newObject);
-    
-    
-        const isMorePostOn = true;
-        console.log(isMorePostOn)
-        setPosts(newPost);
-    
-        console.log(postsPagination); */
-
     const newPost = {
       results: [...postsPagination.results, newObject],
       next_page: newData.next_page,
@@ -119,8 +66,6 @@ export default function Home({ postsPagination }: HomeProps) {
     console.log(newPost)
 
   }
-
-
 
   return (
     <>
@@ -148,11 +93,13 @@ export default function Home({ postsPagination }: HomeProps) {
           </Link>
         ))}
 
-        <a
-          className={`${styles.loadMore} ${(posts.next_page === null) ? styles.morePostOn : ''}`} //
-          onClick={handleLoadMorePost} >
-          Carregar mais posts
-        </a>
+        {!!posts.next_page && (
+          <a
+            className={`${styles.loadMore} `}
+            onClick={handleLoadMorePost} >
+            Carregar mais posts
+          </a>)}
+
       </main>
     </>
 
